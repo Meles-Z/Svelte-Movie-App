@@ -10,5 +10,5 @@
   <div class="absolute top-20 w-full">
     <slot/>
   </div>
-  <Footer/>
+  <!-- <Footer/> -->
 </main>
