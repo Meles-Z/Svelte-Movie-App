@@ -7,7 +7,7 @@
 
 <main class="relative text-white bg-black min-h-screen">
   <Navbar/>
-  <div class="absolute top-20 w-full">
+  <div class="absolute top-20 w-full bg-black">
     <slot/>
   </div>
   <!-- <Footer/> -->

@@ -1,12 +1,18 @@
 <script>
   import { browser } from "$app/environment";
+  import { goto } from "$app/navigation";
+  import { getAllTopRatedMovies } from "$lib/api/homeApi";
   import Card from "$lib/components/Card.svelte";
+  import Pagination from "$lib/components/Pagination.svelte";
+  import { topRatedMoviesPage } from "$lib/store/store";
   import { onMount } from "svelte";
   import Carousel from "svelte-carousel";
 
   export let data;
   let upcomingMovies = data.upComingMovies;
   let topRatedMovies = data.topRatedMovies;
+  let topRatedPart;
+ 
   console.log(data);
 
   let particleToShow = 5;
@@ -21,7 +27,11 @@
       particleToShow = 2;
     }
   }
-  onMount(() => updateParticlesToShow());
+  let initLoad = true;
+  onMount(() => {
+    updateParticlesToShow();
+    initLoad = false;
+  });
   let topCarousel;
   let bottomCarousel;
 
@@ -38,6 +48,12 @@
   function handlePrevBottomCarousel() {
     bottomCarousel.goToPrev();
   }
+  topRatedMoviesPage.subscribe(async (value) => {
+    topRatedMovies = await getAllTopRatedMovies(value);
+    if (!initLoad && topRatedPart) {
+      topRatedPart.scrollIntoView({ behavior: "smooth" });
+    }
+  });
 </script>
 
 {#if browser}
@@ -47,9 +63,13 @@
         bind:this="{topCarousel}"
         dots="{false}"
         autoplay
-        autoplayDuration={2000}
+        autoplayDuration="{2000}"
       >
-        <div slot="next" on:click="{handleNextTopCarousel}" bind:this="{topCarousel}">
+        <div
+          slot="next"
+          on:click="{handleNextTopCarousel}"
+          bind:this="{topCarousel}"
+        >
           <div
             class="absolute z-40 cursor-pointer bg-white right-4 rounded-full p-2 top-1/3 md:1/4 lg:top-1/3 transform -translate-y-1/2"
           >
@@ -72,7 +92,12 @@
           </div>
         </div>
         {#each upcomingMovies as movie}
-          <div class="relative w-full h-[70vh] cursor-pointer">
+          <div
+            on:click="{() => {
+              goto(`/details/${movie.id}`);
+            }}"
+            class="relative w-full h-[70vh] cursor-pointer"
+          >
             <img
               src="{'https://image.tmdb.org/t/p/original' +
                 movie.backdrop_path}"
@@ -112,7 +137,11 @@
     </div>
     <div class="relative flex items-center mt-24">
       <div class="w-full"></div>
-      <Carousel bind:this={bottomCarousel} dots="{false}" particlesToShow="{5}">
+      <Carousel
+        bind:this="{bottomCarousel}"
+        dots="{false}"
+        particlesToShow="{5}"
+      >
         <div slot="next" on:click="{handleNextBottomCarousel}">
           <div
             class="absolute z-40 cursor-pointer bg-white right-4 rounded-full p-2 top-1/3 md:1/4 lg:top-1/3 transform -translate-y-1/2"
@@ -136,7 +165,12 @@
           </div>
         </div>
         {#each upcomingMovies.slice(1) as movie, index}
-          <div class="px-2 cursor-pointer relative">
+          <div
+            on:click="{() => {
+              goto(`/details/${movie.id}`);
+            }}"
+            class="px-2 cursor-pointer relative"
+          >
             <h1 class="absolute z-40 botton-0 font-extrabold">{movie.title}</h1>
             <div
               class="absolute z-30 inset-0 bg-gradient-to-t opacity-65 from-black-to-transparent rounded"
@@ -151,20 +185,19 @@
         {/each}
       </Carousel>
     </div>
+    <div bind:this="{topRatedPart}"></div>
     <div class="pt-20 sm:px-10 mt-9">
       <div class="p-4 flex flex-col items-center gap-6">
-        <h2 class="text-3xl self-start font-bold text-yellow-400 mb-4">Top Rated Movies</h2>
+        <h2 class="text-3xl self-start font-bold text-yellow-400 mb-4">
+          Top Rated Movies
+        </h2>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-          {#each topRatedMovies as movie }
-          <Card {movie} />
+          {#each topRatedMovies as movie}
+            <Card {movie} />
           {/each}
         </div>
-
       </div>
-     
-
     </div>
-   
-    
+    <Pagination pagenationType="{topRatedMoviesPage}" />
   </div>
 {/if}

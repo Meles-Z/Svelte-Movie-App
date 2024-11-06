@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
 export let movie
 import placeholder from "$lib/assets/placeholder.png"
 function handleImageError(event){
@@ -6,7 +7,10 @@ function handleImageError(event){
 }
 </script>
 
-<div class="bg-gray-800 text-white rounded-lg shadow-md overflow-hidden max-w-[17rem] cursor-pointer transition-all">
+<div 
+ on:click="{() => {
+              goto(`/details/${movie.id}`)}}"
+class="bg-gray-800 text-white rounded-lg shadow-md overflow-hidden max-w-[17rem] cursor-pointer transition-all">
     <img 
     class="w-full object-cover"
     on:error="{handleImageError}"
