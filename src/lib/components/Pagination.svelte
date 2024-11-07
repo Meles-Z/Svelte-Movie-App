@@ -1,11 +1,24 @@
 <script>
   import { onMount } from "svelte";
-  import { topRatedMoviesPage } from "$lib/store/store";
-export let pagenationType;
- let  totalPages = 10;
+  import { similarMoviesPage, topRatedMoviesPage, visiblePageStore } from "$lib/store/store";
+  export let pagenationType;
+  let totalPages = 10;
   let visiblePages = 5;
   let pages = [];
   let currentPage = $pagenationType;
+
+  if (typeof window !== "undefined") {
+    const mediaQuery = window.matchMedia(`max-width:640px`);
+    const handlerMediaQueryChange = (e) => {
+      visiblePageStore.set(e.matches ? 3 : 5);
+    };
+    handlerMediaQueryChange(mediaQuery);
+    mediaQuery.addEventListener("change", handlerMediaQueryChange);
+  }
+  visiblePageStore.subscribe((value)=>{
+    visiblePages = value;
+    updatePage();
+  })
 
   onMount(() => {
     updatePage();
@@ -36,7 +49,8 @@ export let pagenationType;
     } else {
       currentPage = totalPages;
     }
-    topRatedMoviesPage.set(currentPage)
+    topRatedMoviesPage.set(currentPage);
+    similarMoviesPage.set(currentPage);
     updatePage();
   }
   function goToPrevPage() {
@@ -45,17 +59,22 @@ export let pagenationType;
   function goToNextPage() {
     setPage(currentPage + 1);
   }
-
 </script>
 
 <div class="pagination">
-  <button on:click="{goToPrevPage}" disabled={currentPage===1} class="prevNext">Previous</button>
+  <button
+    on:click="{goToPrevPage}"
+    disabled="{currentPage === 1}"
+    class="prevNext">Previous</button
+  >
   {#each pages as page}
     <button class:active="{currentPage == page}">{page}</button>
   {/each}
-  <button on:click="{goToNextPage}"
-  disabled={currentPage===totalPages}
-   class="prevNext">Next</button>
+  <button
+    on:click="{goToNextPage}"
+    disabled="{currentPage === totalPages}"
+    class="prevNext">Next</button
+  >
 </div>
 
 <style lang="postcss">
@@ -71,7 +90,8 @@ export let pagenationType;
     @apply opacity-50 cursor-not-allowed;
   }
 
-  .pagination .prevNext,button {
+  .pagination .prevNext,
+  button {
     @apply px-3 py-1 mx-1 text-white border border-gray-300 rounded hover:bg-gray-200 transition-colors duration-300;
     width: 6rem;
   }

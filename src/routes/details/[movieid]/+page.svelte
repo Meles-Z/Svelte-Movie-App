@@ -1,8 +1,13 @@
 <script lang="ts">
+  import { getSimilarMovieById } from "$lib/api/detailsPageApi.js";
   import Card from "$lib/components/Card.svelte";
-import { topRatedMoviesPage } from "$lib/store/store";
+  import Pagination from "$lib/components/Pagination.svelte";
+  import { similarMoviesPage } from "$lib/store/store";
+  import { onMount } from "svelte";
 
   export let data;
+  let initialLoad = true;
+  let similarMoviePart;
   let { movieDetails, similarMovie, movieTailers } = data;
   console.log(data);
   $: {
@@ -12,6 +17,16 @@ import { topRatedMoviesPage } from "$lib/store/store";
       movieTailers = data.movieTailers;
     }
   }
+  onMount(() => {
+    similarMoviesPage.set(1)
+    initialLoad = false;
+  });
+  similarMoviesPage.subscribe(async (value) => {
+    similarMovie = await getSimilarMovieById(value, movieDetails.id);
+    if (!initialLoad && similarMoviePart) {
+      similarMoviePart.scrollIntoView({ behavior: "smooth" });
+    } 
+  });
 </script>
 
 <div class="flex flex-col gap-8">
@@ -95,6 +110,7 @@ import { topRatedMoviesPage } from "$lib/store/store";
       {/if}
     </div>
   </div>
+  <div bind:this="{similarMoviePart}"></div>
   <div class="flex flex-col sm:px-24 px-4 items-center gap-6 mt-10">
     <h2 class="text-xl sm:text-3xl self-start font-bold text-yellow-400 mb-4">
       Similar Movies
@@ -105,8 +121,7 @@ import { topRatedMoviesPage } from "$lib/store/store";
           <Card {movie} />
         {/each}
       {/if}
-      
     </div>
   </div>
- 
+  <Pagination pagenationType="{similarMoviesPage}" />
 </div>

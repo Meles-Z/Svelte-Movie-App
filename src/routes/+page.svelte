@@ -12,8 +12,11 @@
   let upcomingMovies = data.upComingMovies;
   let topRatedMovies = data.topRatedMovies;
   let topRatedPart;
- 
-  console.log(data);
+  let initialLoad = true;
+  onMount(() => {
+    updateParticlesToShow();
+    topRatedMoviesPage.set(1)
+  });
 
   let particleToShow = 5;
 
@@ -27,11 +30,7 @@
       particleToShow = 2;
     }
   }
-  let initLoad = true;
-  onMount(() => {
-    updateParticlesToShow();
-    initLoad = false;
-  });
+ 
   let topCarousel;
   let bottomCarousel;
 
@@ -50,7 +49,9 @@
   }
   topRatedMoviesPage.subscribe(async (value) => {
     topRatedMovies = await getAllTopRatedMovies(value);
-    if (!initLoad && topRatedPart) {
+    if (initialLoad) {
+      initialLoad = false;
+    } else if (topRatedPart) {
       topRatedPart.scrollIntoView({ behavior: "smooth" });
     }
   });
