@@ -5,11 +5,17 @@ import placeholder from "$lib/assets/placeholder.png"
 function handleImageError(event){
     event.target.src=placeholder
 }
+function handleRoute(){
+    if(movie.title){
+        goto(`/details/${movie.id}`, {invalidateAll:true})
+    }else{
+       goto(`/tvShows/details/${movie.id}`, {invalidateAll:true})
+    }
+}
 </script>
 
 <div 
- on:click="{() => {
-              goto(`/details/${movie.id}`)}}"
+ on:click="{() => {handleRoute()}}"
 class="bg-gray-800 text-white rounded-lg shadow-md overflow-hidden max-w-[17rem] cursor-pointer transition-all">
     <img 
     class="w-full object-cover"
@@ -18,12 +24,12 @@ class="bg-gray-800 text-white rounded-lg shadow-md overflow-hidden max-w-[17rem]
 
     <div class="p-4">
         <h1 class="text-left md:text-[17px] text-sm font-semibold line-clamp-1 w-fit hover:underline">
-            {movie.title}
+            {movie.title || movie.name}
         </h1>
         <p class="text-yellow-400 flex items-center mt-2 md:text-[15px] text-[13px]">
             Rating: {movie.vote_average.toFixed(2)}
         </p>
         <p class="text-gray-400">Language: {movie.original_language}</p>
-        <p class="text-gray-400">Release: {movie.release_date}</p>
+        <p class="text-gray-400">Release: {movie.release_date || movie.first_air_date}</p>
     </div>
 </div>

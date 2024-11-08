@@ -11,10 +11,6 @@ export const getSimilarMovieById = async (page: number = 1, id) => {
       options
     );
 
-    if (!res.ok) {
-      throw new Error(`Error fetching upcoming movies: ${res.statusText}`);
-    }
-
     const resData = await res.json();
     return resData.results;
   } catch (error) {

@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte";
-  import { similarMoviesPage, topRatedMoviesPage, visiblePageStore } from "$lib/store/store";
+  import { explorePagePagination, similarMoviesPage, topRatedMoviesPage, topRatedTvPage, visiblePageStore } from "$lib/store/store";
   export let pagenationType;
   let totalPages = 10;
   let visiblePages = 5;
@@ -51,6 +51,8 @@
     }
     topRatedMoviesPage.set(currentPage);
     similarMoviesPage.set(currentPage);
+    explorePagePagination.set(currentPage);
+    topRatedTvPage.set(currentPage);
     updatePage();
   }
   function goToPrevPage() {
