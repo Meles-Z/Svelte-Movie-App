@@ -9,7 +9,6 @@
   let initialLoad = true;
   let similarMoviePart;
   let { movieDetails, similarMovie, movieTailers } = data;
-  console.log(data);
   $: {
     if (data) {
       similarMovie = data.similarMovie;

@@ -53,7 +53,6 @@ const getAllUpcomingMovies = async (fetch, locals) => {
     }
 
     const resData = await res.json();
-    console.log(resData);
     return resData.results;
   } catch (error) {
     console.error(error);
